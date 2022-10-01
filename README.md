@@ -1,2 +1,12 @@
 # moonlight-coder
-Python learning application 
+Python learning application
+
+## Setup
+### Install flask
+`python -m pip install flask`
+
+## Run
+### Development mode
+`flask --app moonlight_coder run`
+### local Url
+127.0.0.1:5000
