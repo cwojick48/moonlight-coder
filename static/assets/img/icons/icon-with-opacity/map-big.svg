@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="45px" height="44px" viewBox="0 0 45 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>map-big</title>
+    <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Rounded-Icons" transform="translate(-2321.000000, -593.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+                <g id="map-big" transform="translate(605.000000, 302.000000)">
+                    <polygon id="Path" points="31.875 0.71625 24.375 4.46625 24.375 40.53375 31.875 36.78375"></polygon>
+                    <polygon id="Path" points="20.625 4.46625 13.125 0.71625 13.125 36.78375 20.625 40.53375"></polygon>
+                    <path d="M9.375,0.81375 L0.909375,5.893125 C0.346875,6.230625 0,6.84 0,7.5 L0,43.125 L9.375,37.06125 L9.375,0.81375 Z" id="Path" opacity="0.70186942"></path>
+                    <path d="M44.090625,5.893125 L35.625,0.81375 L35.625,37.06125 L45,43.125 L45,7.5 C45,6.84 44.653125,6.230625 44.090625,5.893125 Z" id="Path" opacity="0.70186942"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

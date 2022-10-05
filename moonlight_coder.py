@@ -1,3 +1,4 @@
+from cgitb import html
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -8,9 +9,10 @@ class MoonLightCoder:
         pass
 
 @app.route('/')
-@app.route('/<name>')
 def learn_python(name=None):
-    return render_template('main.html', name=name)
+    return render_template('main.html', name=name, file='home.html')
+
+
 
 if __name__ == 'main':
     moonLightCoder = MoonLightCoder()

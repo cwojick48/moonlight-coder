@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="42px" height="42px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>briefcase-24</title>
+    <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Rounded-Icons" transform="translate(-2170.000000, -292.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+                <g id="briefcase-24" transform="translate(454.000000, 1.000000)">
+                    <path d="M26.25,31.5 L26.25,35 L15.75,35 L15.75,31.5 L1.75,31.5 L1.75,40.25 C1.75,41.216 2.534,42 3.5,42 L38.5,42 C39.466,42 40.25,41.216 40.25,40.25 L40.25,31.5 L26.25,31.5 Z" id="Path"></path>
+                    <path d="M40.25,7 L29.75,7 L29.75,1.75 C29.75,0.784 28.966,0 28,0 L14,0 C13.034,0 12.25,0.784 12.25,1.75 L12.25,7 L1.75,7 C0.784,7 0,7.784 0,8.75 L0,26.25 C0,27.216 0.784,28 1.75,28 L15.75,28 L15.75,22.75 L26.25,22.75 L26.25,28 L40.25,28 C41.216,28 42,27.216 42,26.25 L42,8.75 C42,7.784 41.216,7 40.25,7 Z M26.25,7 L15.75,7 L15.75,3.5 L26.25,3.5 L26.25,7 Z" id="Shape" opacity="0.6"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>chart-pie-35</title>
+    <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Rounded-Icons" transform="translate(-1720.000000, -742.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+                <g id="chart-pie-35" transform="translate(4.000000, 451.000000)">
+                    <path d="M21.6666667,18.3333333 L39.915,18.3333333 C39.11,8.635 31.365,0.89 21.6666667,0.085 L21.6666667,18.3333333 Z" id="Path" opacity="0.602864583"></path>
+                    <path d="M20.69,21.6666667 L7.09833333,35.2583333 C10.585,38.21 15.085,40 20,40 C30.465,40 39.0633333,31.915 39.915,21.6666667 L20.69,21.6666667 Z" id="Path"></path>
+                    <path d="M18.3333333,19.31 L18.3333333,0.085 C8.085,0.936666667 0,9.535 0,20 C0,24.915 1.79,29.415 4.74166667,32.9016667 L18.3333333,19.31 Z" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
