@@ -39,7 +39,7 @@
     "uuid": "1c4fa613-9d6d-47f9-868f-8d7ffbcdfc11"},
 
   {"question_type": "single",
-    "question": "{\'a\', \'b\', \'c\', \'d\'} is a ____",
+    "question": "{'a', 'b', 'c', 'd'} is a ____",
     "answers": ["set"],
     "incorrect": ["list", "dict", "vec", "str"],
     "category": "objects",
@@ -47,7 +47,7 @@
     "uuid": "35828ecf-8f17-44f7-8e35-63a4c846774d"},
 
   {"question_type": "single",
-    "question": "{\'a\': 1, \'b\': 1, \'c\': 2, \'d\': 5} is a ____",
+    "question": "{'a': 1, 'b': 1, 'c': 2, 'd': 5} is a ____",
     "answers": ["dict"],
     "incorrect": ["list", "hash", "vec", "keyval"],
     "category": "objects",
@@ -100,4 +100,5 @@
     "incorrect": ["try/catch", "if/else", "do/except", "do/catch"],
     "category": "objects",
     "difficulty": 4,
-    "uuid": "b82e87f8-3a0b-4c7d-9480-a08f82029190"}]
+    "uuid": "b82e87f8-3a0b-4c7d-9480-a08f82029190"}
+]
