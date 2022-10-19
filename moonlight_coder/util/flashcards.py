@@ -43,6 +43,7 @@ class QuestionCategory(str, Enum):
             raise ValueError(f"invalid category, {string} is not supported")
 
 
+# We could also just subclass on question type, if different question types need different "check answer" functions
 @dataclass
 class FlashCard:
     question_type: CardType
@@ -65,16 +66,21 @@ class FlashCard:
         data['category'] = QuestionCategory.from_str(data['category'])
         return FlashCard(**data)
 
+    def check_answer(self, answer: list):
+        return set(answer) == set(self.answers)
+
+
 
 def make_json(cards):
     return json.dumps([asdict(card) for card in cards])
 
 
-def load_cards():
+def load_cards() -> dict:
     json_path = Path(__file__).parent.parent / "data/questions.json"
     with open(json_path, 'r') as fin:
         data = json.load(fin)
-    return [FlashCard.from_dict(card) for card in data]
+    cards = [FlashCard.from_dict(card) for card in data]
+    return {card.uuid: card for card in cards}
 
 
 
