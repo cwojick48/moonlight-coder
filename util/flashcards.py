@@ -1,6 +1,5 @@
 from dataclasses import dataclass, asdict
 from enum import Enum
-from importlib.resources import files, as_file
 import json
 from pathlib import Path
 # from uuid import uuid4, UUID
@@ -69,13 +68,10 @@ def make_json(cards):
     return json.dumps([asdict(card) for card in cards])
 
 
-def load_cards(path: Path):
-    source = files('moonlight-coder/data').joinpath('questions.json')
-    with as_file(source) as test:
-        print(test.read_text())
-
-    # data = json.load(path)
-    # return [FlashCard.from_dict(card) for card in data]
+def load_cards():
+    json_path = Path(__file__) / "../data/questions.json"
+    data = json.load(json_path)
+    return [FlashCard.from_dict(card) for card in data]
 
 
 
