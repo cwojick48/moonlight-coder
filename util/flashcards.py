@@ -70,7 +70,8 @@ def make_json(cards):
 
 def load_cards():
     json_path = Path(__file__) / "../data/questions.json"
-    data = json.load(json_path)
+    with open(json_path, 'w') as fin:
+        data = json.load(fin)
     return [FlashCard.from_dict(card) for card in data]
 
 
