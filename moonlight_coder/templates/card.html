@@ -4,9 +4,18 @@
         <title>Title</title>
     </head>
     <body>
-        <h1>{{ question }}</h1>
-        {%for i in range(0, length)%}
-        <h1>{{answers[i]}}</h1>
-        {%endfor%}
+        <h1>{{ question|safe }}</h1>
+            <div>
+                <form>
+                    <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
+                    {%for i in range(0, length)%}
+                        <div>
+                            <input type="radio" id="{{answers[i]}}" name="answer" value="{{answers[i]}}">
+                            <label for="{{answers[i]}}">{{answers[i]}}</label>
+                        </div>
+                    {%endfor%}
+                    <input type="submit">
+                </form>
+            </div>
     </body>
 </html>

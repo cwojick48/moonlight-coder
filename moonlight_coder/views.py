@@ -1,4 +1,4 @@
-from flask import g, render_template
+from flask import g, render_template, request
 from random import choice, shuffle, sample
 
 from . import app
@@ -15,7 +15,8 @@ class MoonLightCoder:
         print(f'loaded {len(self.questions)} questions')
 
     def get_question(self) -> FlashCard:
-        return self.questions[choice(self.questions)]
+        key = choice(list(self.questions))
+        return self.questions[key]
 
     def check_answer(self, question_uuid: str, answer: list) -> bool:
         try:
@@ -36,10 +37,21 @@ def learn_python(name=None):
 
 @app.route('/cards')
 def flash_cards(name=None):
+    previous_uuid = request.args.get('uuid')
+    if previous_uuid is not None:
+        print(f"previous questions: {previous_uuid}")
+        answers = request.args.get('answer')
+        print(f"previous answers: {answers}")
+        correct = mlc.check_answer(previous_uuid, [answers])
+        if correct:
+            print("nice job!")
+        else:
+            print("no good!")
     flash_card = mlc.get_question()
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
-    return render_template('card.html', question=flash_card.question, length=len(options), answers=options)
+    return render_template('card.html', question=flash_card.question, length=len(options), answers=options,
+                           uuid=flash_card.uuid)
 
 
 @app.teardown_appcontext

@@ -15,7 +15,7 @@
     "uuid": "cd9b537d-fe0a-4831-8202-dfcf55df1dcc"},
 
   {"question_type": "numerical",
-    "question": "What is the the value of c: \\na=5\\nb=2\\nc=a**b",
+    "question": "What is the value of c: <br>a = 5<br>b = 2<br>c = a**b",
     "answers": [25],
     "incorrect": [],
     "category": "operators",
