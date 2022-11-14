@@ -70,7 +70,6 @@ class FlashCard:
         return set(answer) == set(self.answers)
 
 
-
 def make_json(cards):
     return json.dumps([asdict(card) for card in cards])
 
