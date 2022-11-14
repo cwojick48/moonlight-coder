@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Title</title>
-    </head>
-    <body>
-        <h1>{{ question|safe }}</h1>
-            <div>
-                <form>
-                    <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
-                    {%for i in range(0, length)%}
-                        <div>
-                            <input type="radio" id="{{answers[i]}}" name="answer" value="{{answers[i]}}">
-                            <label for="{{answers[i]}}">{{answers[i]}}</label>
-                        </div>
-                    {%endfor%}
-                    <input type="submit">
-                </form>
-            </div>
-    </body>
+<head>
+    // <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    // <script>
+    //     $("input:radio").change(function () {
+    //         alert("test");
+    //         document.getElementById("submitAnswer").disabled = false;
+    //         // $("#submitAnswer").prop("disabled", false);
+    //     });
+    // </script>
+    <title>Title</title>
+</head>
+<body>
+<div class="w-100 justify-content-center align-content-center">
+    <div class="flashcard d-inline-flex flex-column border border-secondary rounded m-5 p-3">
+        <h3>{{ question|safe }}</h3>
+        <div>
+            <form>
+                <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
+                {%for i in range(0, length)%}
+                    <div>
+                        <input type="radio" id="{{answers[i]}}" name="answer" value="{{answers[i]}}">
+                        <label for="{{answers[i]}}">{{answers[i]}}</label>
+                    </div>
+                {%endfor%}
+                <input id="submitAnswer" type="submit">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
 </html>

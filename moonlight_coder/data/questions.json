@@ -15,7 +15,7 @@
     "uuid": "cd9b537d-fe0a-4831-8202-dfcf55df1dcc"},
 
   {"question_type": "numerical",
-    "question": "What is the value of c: <br>a = 5<br>b = 2<br>c = a**b",
+    "question": "What is the value of c: <code><br>a = 5<br>b = 2<br>c = a**b</code>",
     "answers": [25],
     "incorrect": [],
     "category": "operators",
@@ -31,7 +31,7 @@
     "uuid": "94dcf13d-a089-480c-a1f3-6e2fc7bab6db"},
 
   {"question_type": "single",
-    "question": "[1, 2, 3] is a ____",
+    "question": "<code>[1, 2, 3]</code> is a ____",
     "answers": ["list"],
     "incorrect": ["set", "dict", "vec", "int"],
     "category": "objects",
@@ -39,7 +39,7 @@
     "uuid": "1c4fa613-9d6d-47f9-868f-8d7ffbcdfc11"},
 
   {"question_type": "single",
-    "question": "{'a', 'b', 'c', 'd'} is a ____",
+    "question": "<code>{'a', 'b', 'c', 'd'}</code> is a ____",
     "answers": ["set"],
     "incorrect": ["list", "dict", "vec", "str"],
     "category": "objects",
@@ -47,7 +47,7 @@
     "uuid": "35828ecf-8f17-44f7-8e35-63a4c846774d"},
 
   {"question_type": "single",
-    "question": "{'a': 1, 'b': 1, 'c': 2, 'd': 5} is a ____",
+    "question": "<code>{'a': 1, 'b': 1, 'c': 2, 'd': 5}</code> is a ____",
     "answers": ["dict"],
     "incorrect": ["list", "hash", "vec", "keyval"],
     "category": "objects",

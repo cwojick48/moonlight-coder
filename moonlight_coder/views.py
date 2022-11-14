@@ -105,8 +105,8 @@ def flash_cards(name=None):
     flash_card = mlc.get_question()
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
-    return render_template('card.html', question=flash_card.question, length=len(options), answers=options,
-                           uuid=flash_card.uuid)
+    return render_template('main.html', file='card.html', question=flash_card.question, length=len(options),
+                           answers=options, uuid=flash_card.uuid)
 
 
 # this route is just for testing the database functions, not for production
