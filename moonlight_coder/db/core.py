@@ -1,6 +1,7 @@
-from flask import g
 from pathlib import Path
 import sqlite3
+
+from flask import g
 
 from ._tables import TABLE_DEFS
 
