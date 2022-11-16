@@ -41,6 +41,7 @@ def is_safe_url(target):
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
+
 @app.login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
@@ -67,14 +68,25 @@ def learn_python(name=None):
 @app.route('/login')
 def login():
     # example here: https://flask-login.readthedocs.io/en/latest/
-    username = 'nlespera'
-    login_user(User(username))
-    flask.flash(f"Logged in user {username} successfully")
+    # username = 'nlespera'
+    # login_user(User(username))
+    # flask.flash(f"Logged in user {username} successfully")
 
-    next = flask.request.args.get('next')
-    if not is_safe_url(next):
-        return flask.abort(400)
-    return flask.redirect(next or url_for('index'))
+    # next = flask.request.args.get('next')
+    # if not is_safe_url(next):
+    #     return flask.abort(400)
+    # return flask.redirect(next or url_for('index'))
+    return render_template('main.html', file="login.html")
+
+
+@app.route('/signup')
+def signup():
+    # example here: https://flask-login.readthedocs.io/en/latest/
+    # username = 'nlespera'
+    # login_user(User(username))
+    # flask.flash(f"Logged in user {username} successfully")
+    # return redirect('/')
+    return render_template("main.html", file="signup.html")
 
 
 @app.route("/logout")
