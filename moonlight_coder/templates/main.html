@@ -43,14 +43,14 @@
         <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navigation">
             <ul class="navbar-nav navbar-nav-hover mx-auto">
                 <li class="nav-item mx-2">
-                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button">
+                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button" href="{{ url_for('learn_python') }}">
                         Home
                         <img src="../static/assets/img/down-arrow-white.svg" alt="down-arrow" class="arrow ms-1">
                     </a>
                 </li>
 
                 <li class="nav-item mx-2">
-                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button">
+                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button" href="{{ url_for('about') }}">
                         About
                         <img src="../static/assets/img/down-arrow-white.svg" alt="down-arrow" class="arrow ms-1">
                     </a>
@@ -63,7 +63,7 @@
                 </li>
 
                 <li class="nav-item dropdown dropdown-hover mx-2">
-                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button">
+                    <a class="nav-link ps-2 d-flex justify-content-between cursor-pointer align-items-center" role="button" href="{{ url_for('signup') }}">
                         Signup
                         <img src="../static/assets/img/down-arrow-white.svg" alt="down-arrow" class="arrow ms-1">
                     </a>
