@@ -5,7 +5,8 @@ from flask import g
 
 from ._tables import TABLE_DEFS
 
-__all__ = ['get_db', 'get_user_answers', 'check_if_user_exists', 'create_new_user', 'update_user_result']
+__all__ = ['get_db', 'get_user_answers', 'check_if_user_exists', 'create_new_user', 'update_user_result',
+           'get_all_usernames']
 
 
 DATABASE = 'moonlight.db'
@@ -72,6 +73,14 @@ def update_user_result(connection, username: str, uuid: str, correct: bool):
         connection.commit()
 
 
+def get_all_usernames(connection):
+    query = f"""SELECT username FROM users"""
+    cursor = connection.cursor()
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return result
+
+
 def check_if_user_exists(connection, username: str) -> bool:
     query = f"""SELECT username FROM users WHERE username = '{username}'"""
     cursor = connection.cursor()
@@ -80,12 +89,12 @@ def check_if_user_exists(connection, username: str) -> bool:
     return len(result) == 1
 
 
-def create_new_user(connection, username: str, first_name: str, last_name: str):
+def create_new_user(connection, username: str, email: str, first_name: str, last_name: str):
     if check_if_user_exists(connection, username):
         print(f"failed to insert user '{username}', user already exists")
         # this should raise an error that we handle elsewhere, although we ideally don't hit this at all
         return
-    command = f"""INSERT INTO users VALUES('{username}', '{first_name}', '{last_name}')"""
+    command = f"""INSERT INTO users VALUES('{username}', '{email}', '{first_name}', '{last_name}')"""
     cursor = connection.cursor()
     try:
         cursor.execute(command)

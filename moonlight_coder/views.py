@@ -11,8 +11,6 @@ from .db import *
 from .user import User
 from .util import load_cards, FlashCard
 
-# app = Flask(__name__)
-
 
 class MoonLightCoder:
 
@@ -55,45 +53,73 @@ def unauthorized_callback():
 @app.route('/')
 def learn_python(name=None):
     user = flask_login.current_user
+    print(user)
     if user.is_authenticated:
         username = flask_login.current_user.id
         print(f'current user: {username}')
     else:
         print(f'no user logged in')
 
+    # TODO: what is "name"=name? where does this come into play in the template
     return render_template('main.html', name=name, file='home.html')
 
 
 # TODO: needs a lot of development. need to handle the reditect to "next"
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
-    # example here: https://flask-login.readthedocs.io/en/latest/
-    # username = 'nlespera'
-    # login_user(User(username))
-    # flask.flash(f"Logged in user {username} successfully")
-
-    # next = flask.request.args.get('next')
-    # if not is_safe_url(next):
-    #     return flask.abort(400)
-    # return flask.redirect(next or url_for('index'))
+    # TODO: first check if already signed in
     return render_template('main.html', file="login.html")
 
 
-@app.route('/signup')
+@app.route('/login', methods=['POST'])
+def attempt_login():
+    db = get_db()
+    username = request.form.get('username')
+    if not check_if_user_exists(db, username):
+        print(f'username {username} does not exist')
+        print(f'all users: {get_all_usernames(db)}')
+        # TODO: show some kind of error that this user doesnt exist
+        return redirect(url_for("signup"))
+    else:
+        print('b')
+        login_user(User(username))
+        flask.flash(f"Logged in user {username} successfully")
+        print(f'loggined in user {username}')
+        print(flask_login.current_user)
+        next = flask.request.args.get('next')
+        if not is_safe_url(next):
+            print('c')
+            return flask.abort(400)
+        print('d')
+        return flask.redirect(next or url_for('learn_python'))
+
+
+@app.route('/signup', methods=['GET'])
 def signup():
     # example here: https://flask-login.readthedocs.io/en/latest/
-    # username = 'nlespera'
-    # login_user(User(username))
-    # flask.flash(f"Logged in user {username} successfully")
-    # return redirect('/')
     return render_template("main.html", file="signup.html")
 
 
-@app.route("/logout")
+@app.route('/signup', methods=['POST'])
+def new_user():
+    db = get_db()
+    username = request.form.get('first_name')
+    try:
+        create_new_user(db, username=username, email=request.form.get('email'),
+                        first_name=request.form.get('first_name'), last_name=request.form.get('last_name'))
+    except:
+        # TODO make this show an error
+        return render_template("main.html", file="signup.html")
+    else:
+        login_user(User(username))
+        return render_template('main.html', name=username, file='home.html')
+
+
+@app.route("/logout", methods=['GET'])
 @login_required
 def logout():
     logout_user()
-    return redirect('/')
+    return redirect(url_for('learn_python'))
 
 
 # this route will be flushed out with a template and design, precursor to the main "use case" of the app
