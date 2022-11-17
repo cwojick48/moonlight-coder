@@ -163,7 +163,9 @@ def test_database():
 def about():
     return render_template('main.html', file='about.html')
 
-
+@app.route('/profile')
+def profile():
+    return render_template('main.html', file='profile.html')
 
 @app.teardown_appcontext
 def close_connection(exception):
