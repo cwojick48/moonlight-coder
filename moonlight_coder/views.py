@@ -164,7 +164,6 @@ def about():
     return render_template('main.html', file='about.html')
 
 
-
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
