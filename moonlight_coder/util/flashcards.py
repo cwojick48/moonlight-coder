@@ -2,7 +2,8 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import json
 from pathlib import Path
-# from uuid import uuid4, UUID
+from typing import Dict
+from uuid import uuid4, UUID
 
 __all__ = ['CardType', 'FlashCard', 'QuestionCategory', 'load_cards']
 
@@ -29,6 +30,7 @@ class QuestionCategory(str, Enum):
     MISC = 'misc'
     OBJECTS = 'objects'
     OPERATORS = 'operators'
+    FUNCTIONS = 'functions'
 
     # would be a great use of 3.10 case statement...
     @staticmethod
@@ -39,6 +41,8 @@ class QuestionCategory(str, Enum):
             return QuestionCategory.OBJECTS
         elif string == 'operators':
             return QuestionCategory.OPERATORS
+        elif string == 'functions':
+            return QuestionCategory.FUNCTIONS
         else:
             raise ValueError(f"invalid category, {string} is not supported")
 
@@ -74,7 +78,7 @@ def make_json(cards):
     return json.dumps([asdict(card) for card in cards])
 
 
-def load_cards() -> dict:
+def load_cards() -> Dict[str, FlashCard]:
     json_path = Path(__file__).parent.parent / "data/questions.json"
     with open(json_path, 'r') as fin:
         data = json.load(fin)

@@ -1,12 +1,13 @@
 from pathlib import Path
 import sqlite3
+from typing import List
 
 from flask import g
 
 from ._tables import TABLE_DEFS
 
 __all__ = ['get_db', 'get_user_answers', 'check_if_user_exists', 'create_new_user', 'update_user_result',
-           'get_all_usernames']
+           'get_all_usernames', 'get_user']
 
 
 DATABASE = 'moonlight.db'
@@ -36,8 +37,8 @@ def get_db():
     return db
 
 
-def get_user_answers(connection, username: str, uuid: str = None) -> list:
-    query = f"""SELECT * FROM answers 
+def get_user_answers(connection, username: str, uuid: str = None) -> dict:
+    query = f"""SELECT uuid, ignore, num_correct, num_incorrect, streak FROM answers 
     -- JOIN answers on users.username == answers.username 
     WHERE answers.username = '{username}'"""
 
@@ -45,8 +46,9 @@ def get_user_answers(connection, username: str, uuid: str = None) -> list:
         query = query + f" and uuid = '{uuid}'"
     cursor = connection.cursor()
     cursor.execute(query)
-    columns = ('username', 'uuid', 'ignore', 'num_correct', 'num_incorrect', 'streak')
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    columns = ('uuid', 'ignore', 'num_correct', 'num_incorrect', 'streak')
+    raw_results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    return {record['uuid']: record for record in raw_results}
 
 
 def update_user_result(connection, username: str, uuid: str, correct: bool):
@@ -60,14 +62,14 @@ def update_user_result(connection, username: str, uuid: str, correct: bool):
         connection.commit()
     else:
         if not len(previous) == 1:
-            raise Exception("there should never ge more than one row returned")
-        row = previous[0]
+            raise Exception("there should never be more than one row returned")
+        previous = previous[uuid]
         command = f"""UPDATE answers
-        SET num_correct = {row['num_correct'] + int(correct)},
-            num_incorrect = {row['num_incorrect'] + int(not correct)},
-            streak = {row['streak'] + 1 if correct else 0}
-        WHERE username = '{row["username"]}'
-          and uuid = '{row["uuid"]}';"""
+        SET num_correct = {previous['num_correct'] + int(correct)},
+            num_incorrect = {previous['num_incorrect'] + int(not correct)},
+            streak = {previous['streak'] + 1 if correct else 0}
+        WHERE username = '{username}'
+          and uuid = '{uuid}';"""
         cursor = connection.cursor()
         cursor.execute(command)
         connection.commit()
@@ -81,12 +83,19 @@ def get_all_usernames(connection):
     return result
 
 
-def check_if_user_exists(connection, username: str) -> bool:
-    query = f"""SELECT username FROM users WHERE username = '{username}'"""
+USER_FIELDS = ('username', 'email', 'first_name', 'last_name')
+
+
+def get_user(connection, username: str) -> List[dict]:
+    query = f"""SELECT * FROM users WHERE username = '{username}'"""
     cursor = connection.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
-    return len(result) == 1
+    return [dict(zip(USER_FIELDS, record)) for record in result]
+
+
+def check_if_user_exists(connection, username: str) -> bool:
+    return len(get_user(connection, username)) == 1
 
 
 def create_new_user(connection, username: str, email: str, first_name: str, last_name: str):

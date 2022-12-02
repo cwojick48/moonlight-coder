@@ -1,4 +1,6 @@
+from collections import Counter
 from random import choice, shuffle
+from typing import Dict
 from urllib.parse import urlparse, urljoin
 
 import flask
@@ -12,23 +14,41 @@ from .user import User
 from .util import load_cards, FlashCard
 
 
+MODULE_1_DIFFICULTY = 4
+STREAK_MINIMUM = 1
+
+
 class MoonLightCoder:
 
     def __init__(self):
-        self.questions = load_cards()
-        print(f'loaded {len(self.questions)} questions')
+        self.all_questions = load_cards()
+        self.module_questions = dict()  # type: Dict[int, Dict[str, FlashCard]]
+        self.module_questions[0] = {id: q for id, q in self.all_questions.items() if q.difficulty < MODULE_1_DIFFICULTY}
+        self.module_questions[1] = {id: q for id, q in self.all_questions.items() if q.difficulty >= MODULE_1_DIFFICULTY}
+        print(f'loaded {len(self.all_questions)} questions')
 
-    def get_question(self) -> FlashCard:
-        key = choice(list(self.questions))
-        return self.questions[key]
+    def get_question(self, module: int) -> FlashCard:
+        key = choice(list(self.module_questions[module]))
+        return self.module_questions[module][key]
 
     def check_answer(self, question_uuid: str, answer: list) -> bool:
         try:
-            question = self.questions[question_uuid]  # type: FlashCard
+            question = self.all_questions[question_uuid]  # type: FlashCard
         except KeyError:
             print("this question does not exist!")
             raise
         return question.check_answer(answer)
+
+    def get_module_summary(self, module: int, username: str):
+        module_questions = self.module_questions[module]
+        category_denom = Counter(card.category.value for card in module_questions.values())
+        db = get_db()
+        completed_uuids = {uuid for uuid, results in get_user_answers(db, username).items()
+                           if uuid in module_questions and int(results['streak']) >= STREAK_MINIMUM}
+        category_numer = Counter(module_questions[uuid].category.value for uuid in completed_uuids)
+        print(category_denom)
+        print(category_numer)
+        return category_numer, category_denom
 
 
 mlc = MoonLightCoder()
@@ -81,17 +101,14 @@ def attempt_login():
         # TODO: show some kind of error that this user doesnt exist
         return redirect(url_for("signup"))
     else:
-        print('b')
         login_user(User(username))
         flask.flash(f"Logged in user {username} successfully")
         print(f'loggined in user {username}')
         print(flask_login.current_user)
         next = flask.request.args.get('next')
         if not is_safe_url(next):
-            print('c')
             return flask.abort(400)
-        print('d')
-        return flask.redirect(next or url_for('learn_python'))
+        return flask.redirect(next or url_for('profile'))
 
 
 @app.route('/signup', methods=['GET'])
@@ -103,7 +120,7 @@ def signup():
 @app.route('/signup', methods=['POST'])
 def new_user():
     db = get_db()
-    username = request.form.get('first_name')
+    username = request.form.get('username')
     try:
         create_new_user(db, username=username, email=request.form.get('email'),
                         first_name=request.form.get('first_name'), last_name=request.form.get('last_name'))
@@ -123,9 +140,10 @@ def logout():
 
 
 # this route will be flushed out with a template and design, precursor to the main "use case" of the app
-@app.route('/cards')
+@app.route('/cards/module<module>')
 @login_required
-def flash_cards(name=None):
+def flash_cards(module):
+    print(f"cards for module {module}")
     db = get_db()
     username = flask_login.current_user.id
     print(f'current user: {username}')
@@ -140,7 +158,7 @@ def flash_cards(name=None):
         else:
             print("no good!")
         update_user_result(db, username, previous_uuid, correct)
-    flash_card = mlc.get_question()
+    flash_card = mlc.get_question(int(module))
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
     return render_template('main.html', file='card.html', question=flash_card.question, length=len(options),
@@ -165,8 +183,11 @@ def about():
 
 
 @app.route('/profile')
+@login_required
 def profile():
-    return render_template('main.html', file='profile.html')
+    db = get_db()
+    user = flask_login.current_user
+    return render_template('main.html', file='profile.html', user=user)
 
 
 @app.teardown_appcontext
