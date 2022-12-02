@@ -7,14 +7,24 @@ class User(UserMixin):
 
     def __init__(self, username):
         self.id = username
+        self.authenticated = False
 
         db = get_db()
-        if not check_if_user_exists(db, username):
-            raise Exception("this user does not exist, how did we get here?")
-        user_data = get_user(db, username)[0]
-        self.first_name = user_data['first_name']
-        self.last_name = user_data['last_name']
-        self.email = user_data['email']
+        if check_if_user_exists(db, username):
+            self.authenticated = True
+
+            user_data = get_user(db, username)[0]
+            self.first_name = user_data['first_name']
+            self.last_name = user_data['last_name']
+            self.email = user_data['email']
+
+        else:
+            self.first_name = None
+            self.last_name = None
+            self.email = None
+
+    def is_authenticated(self):
+        return self.authenticated
 
     def is_active(self):
         """True, as all users are active."""
