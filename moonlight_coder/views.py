@@ -154,7 +154,7 @@ def test_database():
     db = get_db()
     results = get_user_answers(db, "nlespera")
     if not results:
-        create_new_user(db, "nlespera", "nicholai", "lesperance")
+        create_new_user(db, "nlespera", "nlespera@stevens.edu", "nicholai", "lesperance")
         results = get_user_answers(db, "nlespera")
     return results
 
@@ -163,9 +163,11 @@ def test_database():
 def about():
     return render_template('main.html', file='about.html')
 
+
 @app.route('/profile')
 def profile():
     return render_template('main.html', file='profile.html')
+
 
 @app.teardown_appcontext
 def close_connection(exception):
