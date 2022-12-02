@@ -39,16 +39,20 @@ class MoonLightCoder:
             raise
         return question.check_answer(answer)
 
-    def get_module_summary(self, module: int, username: str):
+    def get_module_summary(self, module: int, username: str) -> Dict[str, int]:
         module_questions = self.module_questions[module]
         category_denom = Counter(card.category.value for card in module_questions.values())
         db = get_db()
+        answers = get_user_answers(db, username)
+        print(f"found answers: {answers}")
         completed_uuids = {uuid for uuid, results in get_user_answers(db, username).items()
-                           if uuid in module_questions and int(results['streak']) >= STREAK_MINIMUM}
+                           if uuid in module_questions and results['streak'] >= STREAK_MINIMUM}
+        print(f"completed: {completed_uuids}")
         category_numer = Counter(module_questions[uuid].category.value for uuid in completed_uuids)
-        print(category_denom)
-        print(category_numer)
-        return category_numer, category_denom
+        print(category_denom, category_numer)
+
+        return {category: int(category_numer.get(category, 0) / denom * 100)
+                for category, denom in category_denom.items()}
 
 
 mlc = MoonLightCoder()
@@ -187,7 +191,9 @@ def about():
 def profile():
     db = get_db()
     user = flask_login.current_user
-    return render_template('main.html', file='profile.html', user=user)
+    module_results = [mlc.get_module_summary(mod, user.id) for mod in mlc.module_questions]
+    print(f'module results: {module_results}')
+    return render_template('main.html', file='profile.html', user=user, module_results=module_results)
 
 
 @app.teardown_appcontext

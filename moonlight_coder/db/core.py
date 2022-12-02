@@ -44,6 +44,7 @@ def get_user_answers(connection, username: str, uuid: str = None) -> dict:
 
     if uuid is not None:
         query = query + f" and uuid = '{uuid}'"
+
     cursor = connection.cursor()
     cursor.execute(query)
     columns = ('uuid', 'ignore', 'num_correct', 'num_incorrect', 'streak')
@@ -56,10 +57,6 @@ def update_user_result(connection, username: str, uuid: str, correct: bool):
     if not previous:
         command = f"""INSERT INTO answers 
         VALUES ('{username}', '{uuid}', 0, {int(correct)}, {int(not correct)}, {int(correct)})"""
-
-        cursor = connection.cursor()
-        cursor.execute(command)
-        connection.commit()
     else:
         if not len(previous) == 1:
             raise Exception("there should never be more than one row returned")
@@ -70,9 +67,11 @@ def update_user_result(connection, username: str, uuid: str, correct: bool):
             streak = {previous['streak'] + 1 if correct else 0}
         WHERE username = '{username}'
           and uuid = '{uuid}';"""
-        cursor = connection.cursor()
-        cursor.execute(command)
-        connection.commit()
+
+    print(f"running db command: {command}")
+    cursor = connection.cursor()
+    cursor.execute(command)
+    connection.commit()
 
 
 def get_all_usernames(connection):

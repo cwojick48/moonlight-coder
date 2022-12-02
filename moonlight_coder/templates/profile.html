@@ -48,57 +48,24 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6">
-            <div class="card mb-4 mb-md-0">
-              <div class="card-body">
-                <p class="mb-4">Module 1 Progress
-                </p>
-                <p class="mb-1" style="font-size: .77rem;">Conditionals</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                    aria-valuemin="0" aria-valuemax="100"></div>
+          {% for results in module_results %}
+            <div class="col-md-6">
+              <div class="card mb-4 mb-md-0">
+                <div class="card-body">
+                  <p class="mb-4">Module {{ loop.index0 }} Progress
+                  </p>
+                    {% for category in results %}
+                  <p class="mb-1" style="font-size: .77rem;">{{ category.title() }}</p>
+                  <div class="progress rounded" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ results[category] }}%" aria-valuenow="{{ results[category] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                    {% endfor %}
+                  <br>
+                  <a href="{{ url_for('flash_cards', module=loop.index0) }}"><button type="button" class="btn btn-primary">Continue Module</button></a>
                 </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Loops</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Variables</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <br>
-                <button type="button" class="btn btn-primary">Continue Module</button>
-
               </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card mb-4 mb-md-0">
-              <div class="card-body">
-                <p class="mb-4"> Module 2 Progress
-                </p>
-                <p class="mb-1" style="font-size: .77rem;">Functions</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Classes</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p class="mt-4 mb-1" style="font-size: .77rem;">Recursion</p>
-                <div class="progress rounded" style="height: 5px;">
-                  <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                    aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <br>
-                <button type="button" class="btn btn-primary">Continue Module</button>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
