@@ -23,8 +23,10 @@ class MoonLightCoder:
     def __init__(self):
         self.all_questions = load_cards()
         self.module_questions = dict()  # type: Dict[int, Dict[str, FlashCard]]
-        self.module_questions[0] = {id: q for id, q in self.all_questions.items() if q.difficulty < MODULE_1_DIFFICULTY}
-        self.module_questions[1] = {id: q for id, q in self.all_questions.items() if q.difficulty >= MODULE_1_DIFFICULTY}
+        self.module_questions[0] = {id: q for id, q in self.all_questions.items(
+        ) if q.difficulty < MODULE_1_DIFFICULTY}
+        self.module_questions[1] = {id: q for id, q in self.all_questions.items(
+        ) if q.difficulty >= MODULE_1_DIFFICULTY}
         print(f'loaded {len(self.all_questions)} questions')
 
     def get_question(self, module: int) -> FlashCard:
@@ -41,14 +43,16 @@ class MoonLightCoder:
 
     def get_module_summary(self, module: int, username: str) -> Dict[str, int]:
         module_questions = self.module_questions[module]
-        category_denom = Counter(card.category.value for card in module_questions.values())
+        category_denom = Counter(
+            card.category.value for card in module_questions.values())
         db = get_db()
         answers = get_user_answers(db, username)
         print(f"found answers: {answers}")
         completed_uuids = {uuid for uuid, results in get_user_answers(db, username).items()
                            if uuid in module_questions and results['streak'] >= STREAK_MINIMUM}
         print(f"completed: {completed_uuids}")
-        category_numer = Counter(module_questions[uuid].category.value for uuid in completed_uuids)
+        category_numer = Counter(
+            module_questions[uuid].category.value for uuid in completed_uuids)
         print(category_denom, category_numer)
 
         return {category: int(category_numer.get(category, 0) / denom * 100)
@@ -150,6 +154,10 @@ def flash_cards(module):
     print(f"cards for module {module}")
     db = get_db()
     username = flask_login.current_user.id
+    totalCards = len(load_cards())
+    remainingCards = totalCards - len(get_user_answers(db, username))
+    previousQuestion = ""
+
     print(f'current user: {username}')
     previous_uuid = request.args.get('uuid')
     if previous_uuid is not None:
@@ -159,14 +167,17 @@ def flash_cards(module):
         correct = mlc.check_answer(previous_uuid, [answers])
         if correct:
             print("nice job!")
+            previousQuestion = "Correct, nice job! The correct answer was " + answers + "."
+
         else:
             print("no good!")
+            previousQuestion = "Incorrect, try again later. The correct answer was " + answers + "."
         update_user_result(db, username, previous_uuid, correct)
     flash_card = mlc.get_question(int(module))
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
     return render_template('main.html', file='card.html', question=flash_card.question, length=len(options),
-                           answers=options, uuid=flash_card.uuid)
+                           answers=options, uuid=flash_card.uuid, totalC=totalCards, remainingC=remainingCards, moduleNum=module, prevQ=previousQuestion)
 
 
 # this route is just for testing the database functions, not for production
@@ -176,7 +187,8 @@ def test_database():
     db = get_db()
     results = get_user_answers(db, "nlespera")
     if not results:
-        create_new_user(db, "nlespera", "nlespera@stevens.edu", "nicholai", "lesperance")
+        create_new_user(db, "nlespera", "nlespera@stevens.edu",
+                        "nicholai", "lesperance")
         results = get_user_answers(db, "nlespera")
     return results
 
@@ -191,7 +203,8 @@ def about():
 def profile():
     db = get_db()
     user = flask_login.current_user
-    module_results = [mlc.get_module_summary(mod, user.id) for mod in mlc.module_questions]
+    module_results = [mlc.get_module_summary(
+        mod, user.id) for mod in mlc.module_questions]
     print(f'module results: {module_results}')
     return render_template('main.html', file='profile.html', user=user, module_results=module_results)
 
