@@ -1,0 +1,30 @@
+body{
+    background:blanchedalmond
+}
+.moduleTitle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.card{
+    height: 400px;
+    width: 750px;
+    background: linear-gradient(#f8da61, #ff5acd);
+    position: relative;
+}
+.questions{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.qTitle{
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.corrStatus, .remaining {
+    margin-left: 10px;
+}

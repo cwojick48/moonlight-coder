@@ -108,6 +108,5 @@ def create_new_user(connection, username: str, email: str, first_name: str, last
         cursor.execute(command)
         connection.commit()
     except Exception as err:
-        print(f"failed to insert user '{username}', something went wrong: {err}")
-
-
+        print(
+            f"failed to insert user '{username}', something went wrong: {err}")
