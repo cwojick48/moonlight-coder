@@ -155,8 +155,15 @@ def logout():
 @app.route('/cards/module<module>', methods=['GET'])
 def flash_cards(module: str):
     user = flask_login.current_user  # type: User
+    print(f'current user: {user.id} {user.first_name}')
     total_cards = len(mlc.module_questions[int(module)])
     remaining_cards = user.count_remaining_cards(int(module))
+
+    if remaining_cards == 0:
+        print(remaining_cards)
+        db = get_db()
+        mark_module_completed(db, user.id, int(module))
+        return redirect(url_for('profile'))
 
     flash_card = mlc.get_question(int(module), user.get_next_card(int(module)))
     options = flash_card.answers + flash_card.incorrect
@@ -169,13 +176,23 @@ def flash_cards(module: str):
                            answers=options, uuid=flash_card.uuid, card_template=card_template, total_cards=total_cards,
                            remaining_cards=remaining_cards, response=response, module=module)
 
+
 @login_required
 @app.route('/shuffle/module<module>')
 def shuffle_cards(module: str):
     user = flask_login.current_user  # type: User
     user.shuffle_deck(module)
-    return redirect(url_for('flash_cards', module=module))
+    return redirect(url_for('flash_cards', module=module, response="The deck is shuffled!"))
 
+
+@login_required
+@app.route('/restart_module<module>')
+def restart_module(module: str):
+    db = get_db()
+    user = flask_login.current_user  # type: User
+    clear_user_streaks(db, user.id, int(module))
+    user.module_cards = None
+    return redirect(url_for('flash_cards', module=module))
 
 
 @login_required
@@ -223,11 +240,11 @@ def about():
 @app.route('/profile')
 @login_required
 def profile():
-    db = get_db()
-    user = flask_login.current_user
-    module_results = [mlc.get_module_summary(
-        mod, user.id) for mod in mlc.module_questions]
-    return render_template('main.html', file='profile.html', user=user, module_results=module_results)
+    user = flask_login.current_user  # type: User
+    module_results = [mlc.get_module_summary(mod, user.id) for mod in mlc.module_questions]
+    completions = {n for n, results in enumerate(module_results) if set(results.values()) == {100}}
+    return render_template('main.html', file='profile.html', user=user, module_results=module_results,
+                           level=user.get_level(), completions=completions)
 
 
 @app.teardown_appcontext

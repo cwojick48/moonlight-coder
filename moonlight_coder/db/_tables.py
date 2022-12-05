@@ -21,4 +21,11 @@ QUESTIONS = """CREATE TABLE questions(
     difficulty int NOT NULL
     );"""
 
-TABLE_DEFS = [USERS, ANSWERS, QUESTIONS]
+COMPLETIONS = """CREATE TABLE completions(
+    username text NOT NULL,
+    module int NOT NULL,
+    PRIMARY KEY (username, module),
+    FOREIGN KEY(username) REFERENCES users(username)
+    );"""
+
+TABLE_DEFS = [USERS, ANSWERS, QUESTIONS, COMPLETIONS]

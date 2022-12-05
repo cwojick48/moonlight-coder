@@ -5,11 +5,12 @@ from typing import List
 from flask import g
 
 from ._tables import TABLE_DEFS
-from ..config import STREAK_MINIMUM
+from ..config import STREAK_MINIMUM, MODULE_1_DIFFICULTY
 from ..util import load_cards
 
 __all__ = ['get_db', 'get_user_answers', 'check_if_user_exists', 'create_new_user', 'update_user_result',
-           'get_all_usernames', 'get_user', 'get_remaining_questions', 'populate_difficulties']
+           'get_all_usernames', 'get_user', 'get_remaining_questions', 'populate_difficulties',
+           'mark_module_completed', 'get_user_completions', 'clear_user_streaks']
 
 
 DATABASE = 'moonlight.db'
@@ -22,7 +23,8 @@ def _initialize_database(connection):
         try:
             cur.execute(table_def)
         except sqlite3.OperationalError as e:
-            print(f"could not initialize table: {e}")
+            # print(f"could not initialize table: {e}")
+            pass
 
     populate_difficulties(connection, {uuid: card.difficulty for uuid, card in load_cards().items()})
 
@@ -43,9 +45,9 @@ def get_db():
     if db is None:
         db = g._database = sqlite3.connect(DATABASE_PATH)
         try:
-            print('initializing database...')
+            # print('initializing database...')
             _initialize_database(db)
-            print('database fully initialized')
+            # print('database fully initialized')
         except Exception as e:
             print(f'problem initializing database: {e}')
     return db
@@ -68,18 +70,29 @@ def get_user_answers(connection, username: str, uuid: str = None) -> dict:
 
 def get_remaining_questions(connection, username: str, streak: int = STREAK_MINIMUM, min_difficulty: int = None,
                             max_difficulty: int = None) -> list:
-    query = f"""SELECT uuid FROM answers 
-    NATURAL JOIN questions
-    WHERE answers.username = '{username}'
-      and answers.streak < {streak}"""
+    # query = f"""SELECT questions.uuid FROM answers
+    # FULL OUTER JOIN questions ON questions.uuid = answers.uuid
+    # WHERE IFNULL(answers.username,'{username}') = '{username}'
+    #   and IFNULL(answers.streak,0) < {streak}"""
+    query = f"""SELECT DISTINCT questions.uuid FROM questions
+        WHERE uuid NOT IN (
+            SELECT uuid FROM answers
+            WHERE answers.username = '{username}'
+              and answers.streak >= {streak} 
+        )
+        """
+
     if min_difficulty is not None:
         query += f"\n      and questions.difficulty >= {min_difficulty}"
     if max_difficulty is not None:
         query += f"\n      and questions.difficulty <= {max_difficulty}"
 
+    print(f"running card query: {query}")
     cursor = connection.cursor()
     cursor.execute(query)
-    return [tup[0] for tup in cursor.fetchall()]
+    results = cursor.fetchall()
+    print(f'retrieved cards: {results}')
+    return [tup[0] for tup in results]
 
 
 def update_user_result(connection, username: str, uuid: str, correct: bool) -> bool:
@@ -108,7 +121,7 @@ def update_user_result(connection, username: str, uuid: str, correct: bool) -> b
     cursor.execute(command)
     connection.commit()
 
-    return streak
+    return completed
 
 
 def get_all_usernames(connection):
@@ -147,3 +160,32 @@ def create_new_user(connection, username: str, email: str, first_name: str, last
     except Exception as err:
         print(
             f"failed to insert user '{username}', something went wrong: {err}")
+
+
+def mark_module_completed(connection, username: str, module: int):
+    command = f"""INSERT OR REPLACE INTO completions VALUES ('{username}', {module})"""
+    cursor = connection.cursor()
+    cursor.execute(command)
+    connection.commit()
+
+
+def get_user_completions(connection, username: str):
+    command = f"""SELECT module FROM completions WHERE username = '{username}'"""
+    cursor = connection.cursor()
+    cursor.execute(command)
+    return [tup[0] for tup in cursor.fetchall()]
+
+
+def clear_user_streaks(connection, username: str, module: int):
+    difficulty = f"< {MODULE_1_DIFFICULTY}" if module == 0 else f">= {MODULE_1_DIFFICULTY}"
+    command = f"""UPDATE answers
+    SET streak = 0
+    WHERE answers.username = '{username}'
+      and answers.uuid in (
+        SELECT DISTINCT uuid 
+        FROM questions 
+        WHERE questions.difficulty {difficulty}
+      )"""
+    cursor = connection.cursor()
+    cursor.execute(command)
+    connection.commit()
