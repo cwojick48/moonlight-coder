@@ -1,5 +1,5 @@
-<div>
-    <form>
+<div class="questions">
+    <form method="post">
         <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
         {%for i in range(0, length)%}
             <div>
@@ -7,6 +7,7 @@
                 <label for="{{answers[i]}}">{{answers[i]}}</label>
             </div>
         {%endfor%}
-        <input id="submitAnswer" type="submit">
+        <button class="submitAnswer">Submit</button>
+        <!-- <input id="submitAnswer" type="submit"> -->
     </form>
 </div>

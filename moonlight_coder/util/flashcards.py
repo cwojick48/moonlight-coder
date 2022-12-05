@@ -78,6 +78,8 @@ class FlashCard:
         return FlashCard(**data)
 
     def check_answer(self, answer: list):
+        if self.question_type == CardType.NUMERICAL:
+            answer = [float(ans) for ans in answer]
         return set(answer) == set(self.answers)
 
 

@@ -5,9 +5,11 @@ from typing import List
 from flask import g
 
 from ._tables import TABLE_DEFS
+from ..config import STREAK_MINIMUM
+from ..util import load_cards
 
 __all__ = ['get_db', 'get_user_answers', 'check_if_user_exists', 'create_new_user', 'update_user_result',
-           'get_all_usernames', 'get_user']
+           'get_all_usernames', 'get_user', 'get_remaining_questions', 'populate_difficulties']
 
 
 DATABASE = 'moonlight.db'
@@ -15,13 +17,25 @@ DATABASE_PATH = Path(__file__).parent / DATABASE
 
 
 def _initialize_database(connection):
-    # with sqlite3.connect(DATABASE) as con:
     cur = connection.cursor()
     for table_def in TABLE_DEFS:
         try:
             cur.execute(table_def)
         except sqlite3.OperationalError as e:
             print(f"could not initialize table: {e}")
+
+    populate_difficulties(connection, {uuid: card.difficulty for uuid, card in load_cards().items()})
+
+
+def populate_difficulties(connection, questions: dict):
+    values = ", \n  ".join([f'(\'{uuid}\', \'{difficulty}\')' for uuid, difficulty in questions.items()])
+    command = f"""INSERT OR REPLACE INTO questions 
+    VALUES {values}"""
+
+    # print(f"running db command: {command}")
+    cursor = connection.cursor()
+    cursor.execute(command)
+    connection.commit()
 
 
 def get_db():
@@ -52,26 +66,49 @@ def get_user_answers(connection, username: str, uuid: str = None) -> dict:
     return {record['uuid']: record for record in raw_results}
 
 
-def update_user_result(connection, username: str, uuid: str, correct: bool):
+def get_remaining_questions(connection, username: str, streak: int = STREAK_MINIMUM, min_difficulty: int = None,
+                            max_difficulty: int = None) -> list:
+    query = f"""SELECT uuid FROM answers 
+    NATURAL JOIN questions
+    WHERE answers.username = '{username}'
+      and answers.streak < {streak}"""
+    if min_difficulty is not None:
+        query += f"\n      and questions.difficulty >= {min_difficulty}"
+    if max_difficulty is not None:
+        query += f"\n      and questions.difficulty <= {max_difficulty}"
+
+    cursor = connection.cursor()
+    cursor.execute(query)
+    return [tup[0] for tup in cursor.fetchall()]
+
+
+def update_user_result(connection, username: str, uuid: str, correct: bool) -> bool:
+    """
+    :return: True if new streak value is greater than the minimium streak value
+    """
     previous = get_user_answers(connection, username, uuid)
     if not previous:
         command = f"""INSERT INTO answers 
         VALUES ('{username}', '{uuid}', 0, {int(correct)}, {int(not correct)}, {int(correct)})"""
+        completed = correct and (STREAK_MINIMUM == 1)
     else:
         if not len(previous) == 1:
             raise Exception("there should never be more than one row returned")
         previous = previous[uuid]
+        streak = previous['streak'] + 1 if correct else 0
         command = f"""UPDATE answers
         SET num_correct = {previous['num_correct'] + int(correct)},
             num_incorrect = {previous['num_incorrect'] + int(not correct)},
-            streak = {previous['streak'] + 1 if correct else 0}
+            streak = {streak}
         WHERE username = '{username}'
           and uuid = '{uuid}';"""
+        completed = streak >= STREAK_MINIMUM
 
-    print(f"running db command: {command}")
     cursor = connection.cursor()
     cursor.execute(command)
     connection.commit()
+
+    return streak
 
 
 def get_all_usernames(connection):

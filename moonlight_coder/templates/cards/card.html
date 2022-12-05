@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../../static/styles/card.css">
 </head>
+
 <body>
-<div class="w-100 justify-content-center align-content-center">
-    <div class="flashcard d-inline-flex flex-column border border-secondary rounded m-5 p-3">
-        <h3>{{ question|safe }}</h3>
+<h1 class="moduleTitle">Module {{ module }} Flashcards</h1>
+<h3 class="corrStatus">{{ response }}</h3>
+<div class="container">
+    <div class="card flashcard">
+        <h3 class="qTitle">{{ question|safe }}</h3>
         {% include card_template %}
     </div>
+    <div>
+        <a href="{{ url_for('flash_cards', module=module) }}"><button>Skip this question...</button></a>
+        <a href="{{ url_for('shuffle_cards', module=module) }}"><button>Shuffle the deck!</button></a>
+    </div>
 </div>
+<h3 class="remaining">Remaining cards {{remaining_cards}}/{{total_cards}}</h3>
 </body>
 </html>

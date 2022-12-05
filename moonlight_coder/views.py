@@ -5,17 +5,15 @@ from urllib.parse import urlparse, urljoin
 
 import flask
 import flask_login
+import requests
 from flask import g, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, login_required
 
 from . import app
+from .config import MODULE_1_DIFFICULTY, STREAK_MINIMUM
 from .db import *
 from .user import User
 from .util import load_cards, FlashCard, CARD_TEMPLATES
-
-
-MODULE_1_DIFFICULTY = 4
-STREAK_MINIMUM = 1
 
 
 class MoonLightCoder:
@@ -23,15 +21,20 @@ class MoonLightCoder:
     def __init__(self):
         self.all_questions = load_cards()
         self.module_questions = dict()  # type: Dict[int, Dict[str, FlashCard]]
-        self.module_questions[0] = {id: q for id, q in self.all_questions.items(
+        self.module_questions[0] = {uuid: q for uuid, q in self.all_questions.items(
         ) if q.difficulty < MODULE_1_DIFFICULTY}
-        self.module_questions[1] = {id: q for id, q in self.all_questions.items(
+        self.module_questions[1] = {uuid: q for uuid, q in self.all_questions.items(
         ) if q.difficulty >= MODULE_1_DIFFICULTY}
         print(f'loaded {len(self.all_questions)} questions')
 
-    def get_question(self, module: int) -> FlashCard:
-        key = choice(list(self.module_questions[module]))
-        return self.module_questions[module][key]
+        self.users = dict()
+
+    def get_question(self, module: int, uuid: str) -> FlashCard:
+        return self.module_questions[module][uuid]
+
+    def get_random_question(self, module: int) -> FlashCard:
+        uuid = choice(list(self.module_questions[module]))
+        return self.get_question(module, uuid)
 
     def check_answer(self, question_uuid: str, answer: list) -> bool:
         try:
@@ -46,11 +49,8 @@ class MoonLightCoder:
         category_denom = Counter(
             card.category.value for card in module_questions.values())
         db = get_db()
-        answers = get_user_answers(db, username)
-        print(f"found answers: {answers}")
         completed_uuids = {uuid for uuid, results in get_user_answers(db, username).items()
                            if uuid in module_questions and results['streak'] >= STREAK_MINIMUM}
-        print(f"completed: {completed_uuids}")
         category_numer = Counter(
             module_questions[uuid].category.value for uuid in completed_uuids)
         print(category_denom, category_numer)
@@ -70,7 +70,10 @@ def is_safe_url(target):
 
 @app.login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    if user_id not in mlc.users:
+        user = User(user_id)
+        mlc.users[user_id] = user
+    return mlc.users[user_id]
 
 
 @app.login_manager.unauthorized_handler
@@ -148,41 +151,55 @@ def logout():
 
 
 # this route will be flushed out with a template and design, precursor to the main "use case" of the app
-@app.route('/cards/module<module>')
 @login_required
-def flash_cards(module):
-    print(f"cards for module {module}")
-    db = get_db()
-    username = flask_login.current_user.id
-    totalCards = len(load_cards())
-    remainingCards = totalCards - len(get_user_answers(db, username))
-    previousQuestion = ""
+@app.route('/cards/module<module>', methods=['GET'])
+def flash_cards(module: str):
+    user = flask_login.current_user  # type: User
+    total_cards = len(mlc.module_questions[int(module)])
+    remaining_cards = user.count_remaining_cards(int(module))
 
-    print(f'current user: {username}')
-    previous_uuid = request.args.get('uuid')
-    if previous_uuid is not None:
-        print(f"previous questions: {previous_uuid}")
-        answers = request.args.get('answer')
-        print(f"previous answers: {answers}")
-        correct = mlc.check_answer(previous_uuid, [answers])
-        if correct:
-            print("nice job!")
-            previousQuestion = "Correct, nice job! The correct answer was " + answers + "."
-
-        else:
-            print("no good!")
-            previousQuestion = "Incorrect, try again later. The correct answer was " + answers + "."
-        update_user_result(db, username, previous_uuid, correct)
-    flash_card = mlc.get_question(int(module))
+    flash_card = mlc.get_question(int(module), user.get_next_card(int(module)))
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
 
     card_template = CARD_TEMPLATES[flash_card.question_type.value]
 
+    response = request.args.get('response') or ""
     return render_template('main.html', file='cards/card.html', question=flash_card.question, length=len(options),
-                           answers=options, uuid=flash_card.uuid, card_template=card_template)
-    return render_template('main.html', file='card.html', question=flash_card.question, length=len(options),
-                           answers=options, uuid=flash_card.uuid, totalC=totalCards, remainingC=remainingCards, moduleNum=module, prevQ=previousQuestion)
+                           answers=options, uuid=flash_card.uuid, card_template=card_template, total_cards=total_cards,
+                           remaining_cards=remaining_cards, response=response, module=module)
+
+@login_required
+@app.route('/shuffle/module<module>')
+def shuffle_cards(module: str):
+    user = flask_login.current_user  # type: User
+    user.shuffle_deck(module)
+    return redirect(url_for('flash_cards', module=module))
+
+
+
+@login_required
+@app.route('/cards/module<module>', methods=['POST'])
+def submit_answer(module):
+    db = get_db()
+    user = flask_login.current_user  # type: User
+    print(f"FORM: {request.form}")
+    answers = [answer for key, answer in request.form.items() if key.startswith('answer')]
+    uuid = request.form.get('uuid')
+    print(f"checking: {uuid} {answers}")
+    correct = mlc.check_answer(uuid, answers)
+
+    if correct:
+        response = "Correct, nice job!"
+    else:
+        response = "Not quite! The correct answer was " + "unknown" + "."
+
+    completed = update_user_result(db, user.id, uuid, correct)
+    if completed:
+        user.remove_card(int(module), uuid)
+
+    print(f"using {response=}")
+    return redirect(url_for('flash_cards', module=module, response=response))
 
 
 # this route is just for testing the database functions, not for production
@@ -210,7 +227,6 @@ def profile():
     user = flask_login.current_user
     module_results = [mlc.get_module_summary(
         mod, user.id) for mod in mlc.module_questions]
-    print(f'module results: {module_results}')
     return render_template('main.html', file='profile.html', user=user, module_results=module_results)
 
 

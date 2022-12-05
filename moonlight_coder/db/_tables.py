@@ -16,4 +16,9 @@ ANSWERS = """CREATE TABLE answers(
     FOREIGN KEY(username) REFERENCES users(username)
     );"""
 
-TABLE_DEFS = [USERS, ANSWERS]
+QUESTIONS = """CREATE TABLE questions(
+    uuid text NOT NULL PRIMARY KEY, 
+    difficulty int NOT NULL
+    );"""
+
+TABLE_DEFS = [USERS, ANSWERS, QUESTIONS]
