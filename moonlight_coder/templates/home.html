@@ -15,8 +15,12 @@
                     <p class="lead text-white text-start pe-5 mt-4">With Midnight Coder, learn how to program in no time!</p>
                     <br />
                     <div class="buttons">
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('profile') }}"><button type="button" class="btn btn-lg btn-info">Start coding!</button></a>
+                        {% else %}
                         <a href="{{ url_for('signup') }}"><button type="button" class="btn btn-lg btn-white">Sign Up</button></a>
                         <a href="{{ url_for('login') }}"><button type="button" class="btn btn-lg btn-info">Log in</button></a>
+                        {% endif %}
                         <a href="{{ url_for('about') }}"><button type="button" class="btn btn-lg btn-link text-white">Learn More</button></a>
                     </div>
                 </div>

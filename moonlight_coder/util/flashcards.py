@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Dict
 from uuid import uuid4, UUID
 
-__all__ = ['CardType', 'FlashCard', 'QuestionCategory', 'load_cards']
+__all__ = ['CardType', 'FlashCard', 'QuestionCategory', 'load_cards', 'CARD_TEMPLATES']
 
 
 class CardType(str, Enum):
@@ -24,6 +24,13 @@ class CardType(str, Enum):
             return CardType.NUMERICAL
         else:
             raise ValueError(f"invalid card type, {string} is not supported")
+
+
+CARD_TEMPLATES = {
+    CardType.SINGLE_CHOICE.value: "cards/single_select.html",
+    CardType.MULTIPLE_CHOICE.value: "cards/multiple_select.html",
+    CardType.NUMERICAL.value: "cards/numerical.html",
+}
 
 
 class QuestionCategory(str, Enum):

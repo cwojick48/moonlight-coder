@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<div class="w-100 justify-content-center align-content-center">
+    <div class="flashcard d-inline-flex flex-column border border-secondary rounded m-5 p-3">
+        <h3>{{ question|safe }}</h3>
+        {% include card_template %}
+    </div>
+</div>
+</body>
+</html>

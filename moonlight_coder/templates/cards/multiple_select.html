@@ -1,0 +1,12 @@
+<div>
+    <form>
+        <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
+        {%for i in range(0, length)%}
+            <div>
+                <input type="checkbox" id="{{answers[i]}}" name="answer" value="{{answers[i]}}">
+                <label for="{{answers[i]}}">{{answers[i]}}</label>
+            </div>
+        {%endfor%}
+        <input id="submitAnswer" type="submit">
+    </form>
+</div>

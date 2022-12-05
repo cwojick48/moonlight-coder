@@ -11,7 +11,7 @@ from flask_login import login_user, logout_user, login_required
 from . import app
 from .db import *
 from .user import User
-from .util import load_cards, FlashCard
+from .util import load_cards, FlashCard, CARD_TEMPLATES
 
 
 MODULE_1_DIFFICULTY = 4
@@ -133,7 +133,7 @@ def new_user():
         return render_template("main.html", file="signup.html")
     else:
         login_user(User(username))
-        return render_template('main.html', name=username, file='home.html')
+        return flask.redirect(url_for('profile'))
 
 
 @app.route("/logout", methods=['GET'])
@@ -165,8 +165,11 @@ def flash_cards(module):
     flash_card = mlc.get_question(int(module))
     options = flash_card.answers + flash_card.incorrect
     shuffle(options)
-    return render_template('main.html', file='card.html', question=flash_card.question, length=len(options),
-                           answers=options, uuid=flash_card.uuid)
+
+    card_template = CARD_TEMPLATES[flash_card.question_type.value]
+
+    return render_template('main.html', file='cards/card.html', question=flash_card.question, length=len(options),
+                           answers=options, uuid=flash_card.uuid, card_template=card_template)
 
 
 # this route is just for testing the database functions, not for production

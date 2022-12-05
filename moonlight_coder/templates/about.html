@@ -12,6 +12,14 @@
                  <body><p style="color:white"> We're a group of Stevens students who are passionate about teaching others to code! We believe that with the right system, ANYONE can learn to code, and our goal is to make sure you achieve your goals.</p></body>
               </div>
             <p class="lead text-white text-start pe-5 mt-4">We all agreed that starting with Python is the best way to begin your coding journey.</p>
+              <div class="buttons">
+                  {% if current_user.is_authenticated %}
+                      <a href="{{ url_for('profile') }}"><button type="button" class="btn btn-lg btn-info">Start coding!</button></a>
+                  {% else %}
+                      <a href="{{ url_for('signup') }}"><button type="button" class="btn btn-lg btn-white">Sign Up</button></a>
+                      <a href="{{ url_for('login') }}"><button type="button" class="btn btn-lg btn-info">Log in</button></a>
+                  {% endif %}
+              </div>
             <br />
           </div>
         </div>
