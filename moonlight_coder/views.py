@@ -230,13 +230,19 @@ def submit_answer(module):
     return redirect(url_for('flash_cards', module=module, response=response))
 
 
-@app.route('/module<module>/quiz')
+@app.route('/module<module>/quiz', methods=['GET'])
 @login_required
 def quiz(module: str):
     print(f"questions for quiz loading...")
     flash_cards = mlc.get_single_choice_module_questions(int(module))
     questions = [(card.uuid, card.question) for card in flash_cards]
     return render_template('main.html', file='quiz.html', module=module, questions=questions)
+
+
+@app.route('/module<module>/quiz', methods=['POST'])
+@login_required
+def grade_quiz(module: str):
+    raise Exception('not implemented')
 
 
 # this route is just for testing the database functions, not for production
