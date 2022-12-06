@@ -1,0 +1,7 @@
+body{
+    background:blanchedalmond
+}
+.surveyTitle{
+    display: flex;
+    justify-content: center;
+}

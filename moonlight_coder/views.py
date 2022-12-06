@@ -226,6 +226,12 @@ def submit_answer(module):
 
     return redirect(url_for('flash_cards', module=module, response=response))
 
+@app.route('/survey')
+@login_required
+def survey():
+    print(f"questions for quiz loading...")
+
+    return render_template('main.html', file='survey.html')
 
 # this route is just for testing the database functions, not for production
 @app.route('/db')
