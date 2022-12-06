@@ -8,19 +8,21 @@
 
 <body>
 <h1 class="moduleTitle">Module {{ module }} Flashcards</h1>
-<h3 class="corrStatus">{{ response }}</h3>
+<h3 class="corrStatus">{{ response|safe }}</h3>
 <div class="container">
     <div class="row">
+        <div class="col-3"></div>
         <div class="card flashcard col-sm">
             <h3 class="qTitle">{{ question|safe }}</h3>
             {% include card_template %}
         </div>
+        <div class="col-3"></div>
     </div>
         <div class="row">
-            <div class="col-12">
-                <a href="{{ url_for('flash_cards', module=module, response='Skipping that card, for now!') }}"><button class="btn btn-success">Skip this question...</button></a>
-                <a href="{{ url_for('shuffle_cards', module=module) }}"><button class="btn btn-primary">Shuffle the deck!</button></a>
-                <a href="{{ url_for('profile', module=module) }}"><button class="btn btn-danger" >I'm done for now.</button></a>
+            <div class="col-12 flashcard-nav">
+                <a href="{{ url_for('flash_cards', module=module, response='Skipping that card, for now!') }}"><button class="btn btn-success btn-left">Skip this question...</button></a>
+                <a href="{{ url_for('shuffle_cards', module=module) }}"><button class="btn btn-primary btn-middle">Shuffle the deck!</button></a>
+                <a href="{{ url_for('profile', module=module) }}"><button class="btn btn-danger btn-right" >I'm done for now.</button></a>
             </div>
         </div>
 

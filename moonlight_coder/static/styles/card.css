@@ -1,23 +1,31 @@
 body{
     background:blanchedalmond
 }
+
 .moduleTitle{
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .card{
     height: 400px;
-    width: 750px;
+    width: 500px;
     background: linear-gradient(#f8da61, #ff5acd);
     position: relative;
+    border: thin;
+    border-style: solid;
+    border-color: black;
+    box-shadow: 8px 8px 10px black;
 }
+
 .questions{
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .qTitle{
     margin-top: 50px;
     display: flex;
@@ -25,6 +33,51 @@ body{
     align-items: center;
     text-align: center;
 }
+
 .corrStatus, .remaining {
-    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.flashcard button {
+    color: black;
+}
+
+.flashcard-nav button {
+    color: black;
+}
+
+.btn-left {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-middle {
+    border-radius: 0;
+}
+
+.btn-right {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.flashcard-nav {
+    padding-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flashcard code {
+    font-family: monospace;
+    display: block;
+    clear: both;
+/*    padding: 1em 1.5em; */
+    color: #666;
+}
+
+.questions label {
+    font-size: 1rem;
+}
+

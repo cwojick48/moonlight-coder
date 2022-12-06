@@ -44,6 +44,14 @@ class MoonLightCoder:
             raise
         return question.check_answer(answer)
 
+    def get_answer(self, question_uuid: str):
+        try:
+            question = self.all_questions[question_uuid]  # type: FlashCard
+        except KeyError:
+            print("this question does not exist!")
+            raise
+        return question.answers
+
     def get_module_summary(self, module: int, username: str) -> Dict[str, int]:
         module_questions = self.module_questions[module]
         category_denom = Counter(
@@ -171,7 +179,7 @@ def flash_cards(module: str):
 
     card_template = CARD_TEMPLATES[flash_card.question_type.value]
 
-    response = request.args.get('response') or ""
+    response = request.args.get('response') or "&nbsp"
     return render_template('main.html', file='cards/card.html', question=flash_card.question, length=len(options),
                            answers=options, uuid=flash_card.uuid, card_template=card_template, total_cards=total_cards,
                            remaining_cards=remaining_cards, response=response, module=module)
@@ -209,7 +217,11 @@ def submit_answer(module):
     if correct:
         response = "Correct, nice job!"
     else:
-        response = "Not quite! The correct answer was " + "unknown" + "."
+        answers = mlc.get_answer(uuid)
+        if len(answers) == 1:
+            response = f"Not quite! The correct answer was '{answers[0]}'."
+        else:
+            response = f"Not quite! The correct answers were: {', '.join(answers)}."
 
     completed = update_user_result(db, user.id, uuid, correct)
     if completed:

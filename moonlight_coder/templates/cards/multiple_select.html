@@ -3,10 +3,12 @@
         <input type="hidden" id="uuid" name="uuid" value="{{ uuid }}">
         {%for i in range(0, length)%}
             <div>
-                <input type="checkbox" id="answer_{{ i }}" name="answer_{{ i }}" value="{{answers[i]}}">
-                <label for="{{answers[i]}}">{{answers[i]}}</label>
+                <label for="answer_{{ i }}">
+                    <input type="checkbox" id="answer_{{ i }}" name="answer_{{ i }}" value="{{answers[i]}}">
+                    {{answers[i]}}
+                </label>
             </div>
         {%endfor%}
-        <button class="submitAnswer" class="btn btn-warning">Submit</button>
+        <button class="submitAnswer btn btn-warning">Submit</button>
     </form>
 </div>
