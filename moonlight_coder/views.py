@@ -92,7 +92,6 @@ def unauthorized_callback():
 @app.route('/')
 def learn_python(name=None):
     user = flask_login.current_user
-    print(user)
     if user.is_authenticated:
         username = flask_login.current_user.id
         print(f'current user: {username}')
@@ -208,10 +207,8 @@ def restart_module(module: str):
 def submit_answer(module):
     db = get_db()
     user = flask_login.current_user  # type: User
-    print(f"FORM: {request.form}")
     answers = [answer for key, answer in request.form.items() if key.startswith('answer')]
     uuid = request.form.get('uuid')
-    print(f"checking: {uuid} {answers}")
     correct = mlc.check_answer(uuid, answers)
 
     if correct:
@@ -227,7 +224,6 @@ def submit_answer(module):
     if completed:
         user.remove_card(int(module), uuid)
 
-    print(f"using {response=}")
     return redirect(url_for('flash_cards', module=module, response=response))
 
 
