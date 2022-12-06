@@ -10,15 +10,21 @@
 <h1 class="moduleTitle">Module {{ module }} Flashcards</h1>
 <h3 class="corrStatus">{{ response }}</h3>
 <div class="container">
-    <div class="card flashcard">
-        <h3 class="qTitle">{{ question|safe }}</h3>
-        {% include card_template %}
+    <div class="row">
+        <div class="card flashcard col-sm">
+            <h3 class="qTitle">{{ question|safe }}</h3>
+            {% include card_template %}
+        </div>
     </div>
-    <div>
-        <a href="{{ url_for('flash_cards', module=module, response='Skipping that card, for now!') }}"><button>Skip this question...</button></a>
-        <a href="{{ url_for('shuffle_cards', module=module) }}"><button>Shuffle the deck!</button></a>
-        <a href="{{ url_for('profile', module=module) }}"><button>I'm done for now.</button></a>
-    </div>
+        <div class="row">
+            <div class="col-12">
+                <a href="{{ url_for('flash_cards', module=module, response='Skipping that card, for now!') }}"><button class="btn btn-success">Skip this question...</button></a>
+                <a href="{{ url_for('shuffle_cards', module=module) }}"><button class="btn btn-primary">Shuffle the deck!</button></a>
+                <a href="{{ url_for('profile', module=module) }}"><button class="btn btn-danger" >I'm done for now.</button></a>
+            </div>
+        </div>
+
+  
 </div>
 <h3 class="remaining">Remaining cards {{remaining_cards}}/{{total_cards}}</h3>
 </body>
