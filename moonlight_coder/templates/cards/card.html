@@ -22,12 +22,12 @@
             <div class="col-12 flashcard-nav">
                 <a href="{{ url_for('flash_cards', module=module, response='Skipping that card, for now!') }}"><button class="btn btn-lg btn-success btn-left">Skip this question...</button></a>
                 <a href="{{ url_for('shuffle_cards', module=module) }}"><button class="btn btn-lg btn-primary btn-middle">Shuffle the deck!</button></a>
-                <a href="{{ url_for('profile', module=module) }}"><button class="btn btn-lg btn-danger btn-right" >I'm done for now.</button></a>
+                <a href="{{ url_for('profile') }}"><button class="btn btn-lg btn-danger btn-right" >I'm done for now.</button></a>
             </div>
         </div>
 
   
 </div>
-<h3 class="remaining">Remaining cards {{remaining_cards}}/{{total_cards}}</h3>
+<h3 class="remaining">Remaining cards: {{ remaining_cards }}/{{ total_cards }}</h3>
 </body>
 </html>

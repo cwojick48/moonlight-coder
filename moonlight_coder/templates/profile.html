@@ -65,26 +65,27 @@
                     {% endfor %}
                   <br>
                 {% if loop.index0 in completions %}
-                    <a href="{{ url_for('restart_module', module=loop.index0) }}"><button type="button" class="btn btn-danger">Restart Module</button></a>
+                    <a href="{{ url_for('restart_module', module=loop.index0) }}"><button type="button" class="btn btn-danger">Reset Flash Cards!</button></a>
                 {% else %}
-                    <a href="{{ url_for('flash_cards', module=loop.index0) }}"><button type="button" class="btn btn-primary">Continue Module</button></a>
+                    <a href="{{ url_for('flash_cards', module=loop.index0) }}"><button type="button" class="btn btn-primary">Flash Cards!</button></a>
+                    <a href="{{ url_for('quiz', module=loop.index0) }}"><button type="button" class="btn btn-primary">Take Quiz</button></a>
                 {% endif %}
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-md-6">
             <div class="card mb-4 mb-md-0">
               <div class="card-body">
                 <p class="mb-4">Questionaire</p>
                 <br>
-                <a href="{{ url_for('survey') }}"><button type="button" class="btn btn-primary">Take Survey</button></a>
+                <a href="{{ url_for('quiz', module=0) }}"><button type="button" class="btn btn-primary">Take Survey</button></a>
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
     </div>
   </div>
 </section>

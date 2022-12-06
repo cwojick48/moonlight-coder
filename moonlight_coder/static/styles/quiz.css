@@ -1,0 +1,23 @@
+body{
+    background:blanchedalmond
+}
+
+.quizTitle{
+    display: flex;
+    justify-content: center;
+}
+
+.quizCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.quizInput{
+    display: flex;
+    justify-content: right;
+    align-items: end;
+    text-align: right;
+}

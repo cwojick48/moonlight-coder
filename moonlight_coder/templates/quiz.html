@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Module Quiz</title>
+    <link rel="stylesheet" href="../static/styles/quiz.css">
+</head>
+
+<body>
+
+<h1 class="quizTitle">Module {{ module }} Quiz</h1>
+
+<div class="container">
+    <div class="questions">
+        <div class="row">
+            <div class="col-auto"></div>
+            <div class="col-lg quizCenter">
+                <form>
+                    <div class="row p-1">
+                        {% for question in questions %}
+                            <div class="col-sm-1">
+                                {{ loop.index0 }}.
+                            </div>
+                            <div class="col-sm-6">
+                                {{ question[1] | safe }}
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" size="20">
+                            </div>
+                            <div class="w-100"></div>
+                        {% endfor %}
+                    </div>
+                    <div class="row p-3">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-2">
+                            <button class="btn btn-success submitAnswer">Submit Answers</button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ url_for('profile') }}" class="btn btn-danger">Take me home!</a>
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-auto"></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

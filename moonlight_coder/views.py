@@ -4,16 +4,15 @@ from typing import Dict
 from urllib.parse import urlparse, urljoin
 
 import flask
-import flask_login
-import requests
 from flask import g, render_template, request, redirect, url_for
+import flask_login
 from flask_login import login_user, logout_user, login_required
 
 from . import app
 from .config import MODULE_1_DIFFICULTY, STREAK_MINIMUM
 from .db import *
 from .user import User
-from .util import load_cards, FlashCard, CARD_TEMPLATES
+from .util import load_cards, FlashCard, CARD_TEMPLATES, CardType
 
 
 class MoonLightCoder:
@@ -65,6 +64,10 @@ class MoonLightCoder:
 
         return {category: int(category_numer.get(category, 0) / denom * 100)
                 for category, denom in category_denom.items()}
+
+    def get_single_choice_module_questions(self, module: int):
+        module_questions = self.module_questions[module]
+        return [question for question in module_questions.values() if question.question_type == CardType.SINGLE_CHOICE]
 
 
 mlc = MoonLightCoder()
@@ -159,7 +162,7 @@ def logout():
 
 # this route will be flushed out with a template and design, precursor to the main "use case" of the app
 @login_required
-@app.route('/cards/module<module>', methods=['GET'])
+@app.route('/module<module>/cards', methods=['GET'])
 def flash_cards(module: str):
     user = flask_login.current_user  # type: User
     print(f'current user: {user.id} {user.first_name}')
@@ -167,9 +170,9 @@ def flash_cards(module: str):
     remaining_cards = user.count_remaining_cards(int(module))
 
     if remaining_cards == 0:
-        print(remaining_cards)
-        db = get_db()
-        mark_module_completed(db, user.id, int(module))
+        # print(remaining_cards)
+        # db = get_db()
+        # mark_module_completed(db, user.id, int(module))
         return redirect(url_for('profile'))
 
     flash_card = mlc.get_question(int(module), user.get_next_card(int(module)))
@@ -185,7 +188,7 @@ def flash_cards(module: str):
 
 
 @login_required
-@app.route('/shuffle/module<module>')
+@app.route('/module<module>/shuffle')
 def shuffle_cards(module: str):
     user = flask_login.current_user  # type: User
     user.shuffle_deck(module)
@@ -193,7 +196,7 @@ def shuffle_cards(module: str):
 
 
 @login_required
-@app.route('/restart_module<module>')
+@app.route('/module<module>/reset')
 def restart_module(module: str):
     db = get_db()
     user = flask_login.current_user  # type: User
@@ -203,7 +206,7 @@ def restart_module(module: str):
 
 
 @login_required
-@app.route('/cards/module<module>', methods=['POST'])
+@app.route('/module<module>/cards', methods=['POST'])
 def submit_answer(module):
     db = get_db()
     user = flask_login.current_user  # type: User
@@ -226,12 +229,15 @@ def submit_answer(module):
 
     return redirect(url_for('flash_cards', module=module, response=response))
 
-@app.route('/survey')
-@login_required
-def survey():
-    print(f"questions for quiz loading...")
 
-    return render_template('main.html', file='survey.html')
+@app.route('/module<module>/quiz')
+@login_required
+def quiz(module: str):
+    print(f"questions for quiz loading...")
+    flash_cards = mlc.get_single_choice_module_questions(int(module))
+    questions = [(card.uuid, card.question) for card in flash_cards]
+    return render_template('main.html', file='quiz.html', module=module, questions=questions)
+
 
 # this route is just for testing the database functions, not for production
 @app.route('/db')

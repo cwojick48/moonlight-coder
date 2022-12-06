@@ -9,13 +9,11 @@ body{
 }
 
 .card{
-    height: 400px;
+    height: 475px;
     width: 500px;
     background: linear-gradient(#f8da61, #ff5acd);
     position: relative;
-    border: thin;
-    border-style: solid;
-    border-color: black;
+    border: thin solid black;
     box-shadow: 8px 8px 10px black;
 }
 
@@ -78,6 +76,6 @@ body{
 }
 
 .questions label {
-    font-size: 1rem;
+    font-size: 1.25rem;
 }
 
