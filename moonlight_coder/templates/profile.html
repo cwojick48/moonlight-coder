@@ -1,3 +1,6 @@
+<head>
+  <link rel="stylesheet" href="../static/styles/profile.css">
+</head>
 <section style="background-color: #eee;">
   <div class="container py-5">
     <div class="row">
@@ -71,7 +74,17 @@
             </div>
           {% endfor %}
         </div>
-      </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-4 mb-md-0">
+              <div class="card-body">
+                <p class="mb-4">Questionaire</p>
+                <br>
+                <a href="{{ url_for('survey') }}"><button type="button" class="btn btn-primary">Take Survey</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
 </section>
