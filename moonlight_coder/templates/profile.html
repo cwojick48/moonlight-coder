@@ -58,10 +58,13 @@
             <div class="col-md-6">
               <div class="card mb-4 mb-md-0">
                 <div class="card-body">
-                  <p class="mb-4">Module {{ loop.index0 }} Progress {% if loop.index0 in quiz_completions %}(Completed!){% endif %}
+                  {% set curr = loop.index0 %}
+
+                  <p class="mb-4">Module {{ loop.index0 }} Progress: {{card_count[loop.index0].remaining}}/{{card_count[loop.index0].total}} Remaining{% if loop.index0 in quiz_completions %}(Completed!){% endif %}
                   </p>
                     {% for category in results %}
-                  <p class="mb-1" style="font-size: .77rem;">{{ category.title() }}</p>
+                    {% set i = loop.index0 %}
+                  <p class="mb-1" style="font-size: .77rem;">{{ category.title() }}: {{ remaining[curr][i] }} Completed</p>
                   <div class="progress rounded" style="height: 5px;">
                     <div class="progress-bar" role="progressbar" style="width: {{ results[category] }}%" aria-valuenow="{{ results[category] }}" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>

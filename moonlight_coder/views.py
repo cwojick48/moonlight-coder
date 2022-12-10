@@ -60,10 +60,18 @@ class MoonLightCoder:
                            if uuid in module_questions and results['streak'] >= STREAK_MINIMUM}
         category_numer = Counter(
             module_questions[uuid].category.value for uuid in completed_uuids)
-        print(category_denom, category_numer)
 
-        return {category: int(category_numer.get(category, 0) / denom * 100)
+        results = {category: int(category_numer.get(category, 0) / denom * 100)
                 for category, denom in category_denom.items()}
+
+        remaining = {}
+        i =0
+        for category, n in category_denom.items():
+            
+            #print(str(category_numer.get(category, 0)) + "/" + str(n))
+            remaining[i] = str(category_numer.get(category, 0)) + "/" + str(n)
+            i+=1
+        return (results, remaining)
 
     def get_single_choice_module_questions(self, module: int):
         module_questions = self.module_questions[module]
@@ -276,12 +284,25 @@ def about():
 def profile(message: str = ""):
     db = get_db()
     user = flask_login.current_user  # type: User
-    module_results = [mlc.get_module_summary(mod, user.id) for mod in mlc.module_questions]
+
+    module_results = [mlc.get_module_summary(mod, user.id)[0] for mod in mlc.module_questions]
+    remaining = [mlc.get_module_summary(mod, user.id)[1] for mod in mlc.module_questions]
+
     card_completions = {n for n, results in enumerate(module_results) if set(results.values()) == {100}}
     quiz_completions = get_user_completions(db, user.id)
+
+    m1_total_cards = len(mlc.module_questions[0])
+    m1_remaining_cards = user.count_remaining_cards(0)
+
+    m2_total_cards = len(mlc.module_questions[1])
+    m2_remaining_cards = user.count_remaining_cards(1)
+
+    cardCount = [{"total": m1_total_cards, "remaining": m1_remaining_cards}, {"total":m2_total_cards, "remaining": m2_remaining_cards}]
+    print(remaining)
+
     return render_template('main.html', file='profile.html', user=user, module_results=module_results,
                            level=user.get_level(), card_completions=card_completions, quiz_completions=quiz_completions,
-                           message=message)
+                           message=message, card_count=cardCount, remaining=remaining)
 
 
 @app.teardown_appcontext
