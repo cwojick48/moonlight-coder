@@ -4,6 +4,9 @@
 <section style="background-color: #eee;">
   <div class="container py-5">
     <div class="row">
+        <div class="col-1"></div>
+        <div class="col-6"><h3>{{ message }}</h3></div>
+        <div class="col-3"></div>
     </div>
 
     <div class="row">
@@ -55,7 +58,7 @@
             <div class="col-md-6">
               <div class="card mb-4 mb-md-0">
                 <div class="card-body">
-                  <p class="mb-4">Module {{ loop.index0 }} Progress
+                  <p class="mb-4">Module {{ loop.index0 }} Progress {% if loop.index0 in quiz_completions %}(Completed!){% endif %}
                   </p>
                     {% for category in results %}
                   <p class="mb-1" style="font-size: .77rem;">{{ category.title() }}</p>
@@ -64,10 +67,14 @@
                   </div>
                     {% endfor %}
                   <br>
-                {% if loop.index0 in completions %}
+                {% if loop.index0 in card_completions %}
                     <a href="{{ url_for('restart_module', module=loop.index0) }}"><button type="button" class="btn btn-danger">Reset Flash Cards!</button></a>
                 {% else %}
                     <a href="{{ url_for('flash_cards', module=loop.index0) }}"><button type="button" class="btn btn-primary">Flash Cards!</button></a>
+                {% endif %}
+                {% if loop.index0 in quiz_completions %}
+                    <button type="button" disabled class="btn btn-success">Completed</button>
+                {% else %}
                     <a href="{{ url_for('quiz', module=loop.index0) }}"><button type="button" class="btn btn-primary">Take Quiz</button></a>
                 {% endif %}
                 </div>

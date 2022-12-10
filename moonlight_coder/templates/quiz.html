@@ -25,7 +25,7 @@
                                 {{ question[1] | safe }}
                             </div>
                             <div class="col-sm-2">
-                                <input type="text" size="20">
+                                <input type="text" id="answer:{{ question[0] }}" name="answer:{{ question[0] }}" size="20">
                             </div>
                             <div class="w-100"></div>
                         {% endfor %}

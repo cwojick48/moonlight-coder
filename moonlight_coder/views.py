@@ -9,7 +9,7 @@ import flask_login
 from flask_login import login_user, logout_user, login_required
 
 from . import app
-from .config import MODULE_1_DIFFICULTY, STREAK_MINIMUM
+from .config import MODULE_1_DIFFICULTY, STREAK_MINIMUM, PASSING_GRADE
 from .db import *
 from .user import User
 from .util import load_cards, FlashCard, CARD_TEMPLATES, CardType
@@ -170,10 +170,7 @@ def flash_cards(module: str):
     remaining_cards = user.count_remaining_cards(int(module))
 
     if remaining_cards == 0:
-        # print(remaining_cards)
-        # db = get_db()
-        # mark_module_completed(db, user.id, int(module))
-        return redirect(url_for('profile'))
+        return profile(message=f"Congratulations, you completed all Module {module} flash cards!")
 
     flash_card = mlc.get_question(int(module), user.get_next_card(int(module)))
     options = flash_card.answers + flash_card.incorrect
@@ -242,7 +239,18 @@ def quiz(module: str):
 @app.route('/module<module>/quiz', methods=['POST'])
 @login_required
 def grade_quiz(module: str):
-    raise Exception('not implemented')
+    answers = {key.split(':')[1]: answer for key, answer in request.form.items() if key.startswith('answer:')}
+    correct = [mlc.check_answer(uuid, [answer]) for uuid, answer in answers.items()]
+    grade = int(round(sum(correct) / len(correct), 2) * 100)
+    if grade >= PASSING_GRADE:
+        db = get_db()
+        username = flask_login.current_user.id
+        profile_message = f"Congratulations, you completed Module {module} with a score of {grade}%!"
+        mark_module_completed(db, username, int(module))
+    else:
+        profile_message = f"Dang! You scored {grade}%, not enough to pass. Keep trying!"
+    return profile(profile_message)
+
 
 
 # this route is just for testing the database functions, not for production
@@ -265,12 +273,15 @@ def about():
 
 @app.route('/profile')
 @login_required
-def profile():
+def profile(message: str = ""):
+    db = get_db()
     user = flask_login.current_user  # type: User
     module_results = [mlc.get_module_summary(mod, user.id) for mod in mlc.module_questions]
-    completions = {n for n, results in enumerate(module_results) if set(results.values()) == {100}}
+    card_completions = {n for n, results in enumerate(module_results) if set(results.values()) == {100}}
+    quiz_completions = get_user_completions(db, user.id)
     return render_template('main.html', file='profile.html', user=user, module_results=module_results,
-                           level=user.get_level(), completions=completions)
+                           level=user.get_level(), card_completions=card_completions, quiz_completions=quiz_completions,
+                           message=message)
 
 
 @app.teardown_appcontext

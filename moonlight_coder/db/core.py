@@ -169,11 +169,11 @@ def mark_module_completed(connection, username: str, module: int):
     connection.commit()
 
 
-def get_user_completions(connection, username: str):
+def get_user_completions(connection, username: str) -> set:
     command = f"""SELECT module FROM completions WHERE username = '{username}'"""
     cursor = connection.cursor()
     cursor.execute(command)
-    return [tup[0] for tup in cursor.fetchall()]
+    return {tup[0] for tup in cursor.fetchall()}
 
 
 def clear_user_streaks(connection, username: str, module: int):
