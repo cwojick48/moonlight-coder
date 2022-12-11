@@ -3,7 +3,7 @@ Python learning application
 
 ## Setup
 ### Install flask
-`python -m pip install flask`
+`python -m pip install flask flask_login`
 
 ## Run
 ### Development mode
